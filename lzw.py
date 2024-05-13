@@ -1,50 +1,42 @@
-from misc_funcs import read_file, dict_to_str, huffman_to_bytes, lst_to_bytes, bytes_to_lst
-from huffman import Huffman
+'''LZW compression algorithm'''
+
+from os import path as os_path
 
 class LZW:
-    def encode(self, text: str) -> tuple[list, list]:
-        if not text:
-            return "", []
 
-        dictionary = {}
-        i = 0
-        text1 = len(set(text))
-        counter = 0
+    def encode(self, file_bytes: bytes) -> tuple[bytes, int]:
+        if not file_bytes:
+            return b'', []
 
-        for char in text:
-            if counter == text1:
+        dictionary = {bytes([i]): i for i in range(256)}
+
+        bytes_amount = 3
+
+        encoded_text = bytearray()
+        temp = b""
+        counter = 256
+
+        while True:
+            try:
+                for char in file_bytes:
+                    temp += bytes([char])
+                    if temp not in dictionary:
+                        encoded_text.extend(dictionary[temp[:-1]].to_bytes(bytes_amount, 'big'))
+                        dictionary[temp] = counter
+                        counter += 1
+                        temp = bytes([char])
+                encoded_text.extend(dictionary[temp].to_bytes(bytes_amount, 'big'))
                 break
-            if char not in dictionary:
-                dictionary[char] = i
-                i += 1
-                counter += 1
+            except OverflowError:
+                bytes_amount += 1
+                dictionary = {bytes([i]): i for i in range(256)}
+                encoded_text = bytearray()
+                temp = b""
+                counter = 256
 
-        result_dictionary = list(dictionary.keys())
 
-        # encoded_text = ''
-        # encoded_text = []
-        encoded_text = b''
-        temp = ""
-        counter = len(dictionary)
-        abcc=0
+        return bytes(encoded_text), bytes_amount
 
-        for char in text:
-            temp += char
-            if temp not in dictionary:
-                # encoded_text += (str(dictionary[temp[:-1]])) + " "
-                # encoded_text.append(dictionary[temp[:-1]])
-                encoded_text += dictionary[temp[:-1]].to_bytes(3, 'big')
-                print(abcc)
-                abcc+=1
-                dictionary[temp] = counter
-                counter += 1
-                temp = char
-
-        # encoded_text += str(dictionary[temp])
-        # encoded_text.append(dictionary[temp])
-        encoded_text += dictionary[temp].to_bytes(3, 'big')
-
-        return encoded_text, result_dictionary
 
     def decode(self, code: str, coding_dict: list) -> str:
         coding_dict = dict(enumerate(coding_dict))
@@ -77,36 +69,14 @@ class LZW:
                 decoded_text += coding_dict[num]
         return decoded_text
 
-    def encode_file(self, path: str, encoding: str):
-        huffman = Huffman()
+    def encode_file(self, path: str):
+        with open(path, "rb") as file:
+            file_bytes = file.read()
 
-        file_str = read_file(path, encoding)
+        file = os_path.basename(path)
+        file_extension = file.split('.')[1]
 
-        encoded_text_huffman, coding_dict_huffman = huffman.encode(file_str)
-        print(len(encoded_text_huffman))
-        # coding_dict_huffman = dict_to_str(coding_dict_huffman)
-        # # print(encoded_text_huffman)
-        # # print(coding_dict_huffman)
-        # print(2)
-        # file_extension = path.split(".", 1)[1]
-        # file_name = path.split(".", 1)[0]
+        encoded_text, bytes_amount = self.encode(file_bytes)
 
-        # encoded_text_lzw, coding_dict_lzw = self.encode(encoded_text_huffman)
-        # coding_dict_lzw = bytes(int(coding_dict_lzw[0]))
-        # # print(encoded_text_lzw)
-        # # print(coding_dict_lzw)
-
-        # # print(encoded_text_lzw)
-        # # print(coding_dict_lzw)
-        # print(1)
-        # # encoded_text_bytes, byte = lst_to_bytes(encoded_text_lzw)
-        # # print(encoded_text_bytes)
-
-        # with open(f"encoded_{file_name}.lzw", "wb") as file:
-        #     file.write(file_extension.encode(encoding) + b";" + coding_dict_lzw + b";" + encoded_text_lzw)
-
-
-if __name__ == "__main__":
-    lzw = LZW()
-    lzw.encode_file("bug.png", "latin-1")
-    # print(lzw.encode("abracadabraabraca"))
+        with open(f"encoded_{file}.lzw", 'wb') as file:
+            file.write(file_extension.encode()+b'|'+bytes_amount.to_bytes(1, 'big'+b'|'+encoded_text))
