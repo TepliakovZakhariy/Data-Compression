@@ -2,7 +2,7 @@
 LZ78 
 """
 
-from lz78.algorythm import LZ78
+from algorythm import LZ78
 
 class Codder:
     """

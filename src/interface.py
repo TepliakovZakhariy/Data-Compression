@@ -5,7 +5,7 @@ import tkinter.messagebox
 import customtkinter
 import tkinter.test
 from lz77 import LZ77
-from lz78.lz78 import Codder
+from lz78 import Codder
 from lzw import LZW
 from huffman import Huffman
 
@@ -295,6 +295,6 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     app = App()
     app.title("Data Compression")
-    app.iconbitmap("image.ico")
+    app.iconbitmap("assets/image.ico")
     app.resizable(width=False, height=False)
     app.mainloop()
