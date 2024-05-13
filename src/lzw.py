@@ -15,7 +15,7 @@ class LZW:
         '''Compresses the bytes'''
 
         if not file_bytes:
-            return b"", []
+            return b"", 1
 
         dictionary = {bytes([i]): i for i in range(256)}
 
@@ -50,6 +50,9 @@ class LZW:
     @staticmethod
     def decode(code: bytes, bytes_per_code: int) -> bytes:
         '''Decompresses the bytes'''
+
+        if not code:
+            return b""
 
         dictionary = {i: bytes([i]) for i in range(256)}
         decoded_text = bytearray()
