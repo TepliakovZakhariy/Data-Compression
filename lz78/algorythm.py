@@ -43,18 +43,19 @@ class LZ78:
         output = bytearray()
 
         with open(path, "rb") as file:
+            codding_length = int.from_bytes(file.read(1), byteorder="big") + 1
             length = int.from_bytes(file.read(1), byteorder="big")
             file.read(length)
 
             byte_buffer = io.BytesIO(file.read())
             while True:
                 try:
-                    byte = byte_buffer.read(4)
+                    byte = byte_buffer.read(codding_length)
                     if not byte:
                         break
 
-                    number = int.from_bytes(byte[:3], "big")
-                    character = byte[3:4]
+                    number = int.from_bytes(byte[:codding_length-1], "big")
+                    character = byte[codding_length-1:codding_length]
                     decoded = dictionary[number] + character
                     output += decoded
                     dictionary[len(dictionary)] = decoded
