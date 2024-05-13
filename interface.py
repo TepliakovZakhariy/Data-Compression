@@ -150,8 +150,8 @@ class App(customtkinter.CTk):
 
     def BrowseFileToCompress(self):
         if not self.compress_var.get():
-                tkinter.messagebox.showerror(
-                "File Error", "You didn't choose the method of compression"
+            tkinter.messagebox.showerror(
+                "File Error", "Choose the method of compression"
             )
         else:
             self.file_to_compress_name.configure(state="normal")
@@ -178,9 +178,7 @@ class App(customtkinter.CTk):
 
     def SaveDecompressedFile(self):
         if not self.file_to_decompress_path:
-            tkinter.messagebox.showerror(
-                "File Error", "You didn't choose the file to decompress"
-            )
+            tkinter.messagebox.showerror("File Error", "Choose the file to decompress")
         else:
             file = filedialog.asksaveasfile(title="Save File", defaultextension=".oleg")
             with open(file.name, "w", encoding="utf-8") as new_file:
@@ -188,35 +186,32 @@ class App(customtkinter.CTk):
 
     def SaveCompressedFile(self):
         if not self.file_to_compress_path:
-            tkinter.messagebox.showerror(
-                "File Error", "You didn't choose the file to decompress"
-            )
+            tkinter.messagebox.showerror("File Error", "Choose the file to decompress")
 
         else:
             extension = self.compress_var.get()
             if not extension:
                 tkinter.messagebox.showerror(
-                "File Error", "You didn't choose the method of compression"
-            )
+                    "File Error", "Choose the method of compression"
+                )
 
             file = filedialog.asksaveasfile(
-                title="Save File", defaultextension = f".{extension}"
-                )
+                title="Save File", defaultextension=f".{extension}"
+            )
 
             if extension == "lz78":
                 Codder.encoding(self.file_to_compress_path, file.name)
 
-                tkinter.messagebox.showerror(
-                    "Success", "Success"
-                )
+                tkinter.messagebox.showerror("Success", "Success")
                 self.file_to_compress_name.configure(state="normal")
                 self.file_to_compress_name.delete(0, "end")
                 self.file_to_compress_name.configure(state="disabled")
 
+
 if __name__ == "__main__":
     app = App()
     app.title("Sigma App")
-    app.iconbitmap("sticker_019.ico")
+    app.iconbitmap("../sticker_019.ico")
     app.geometry("600x400")
     app.resizable(width=False, height=False)
     app.mainloop()
