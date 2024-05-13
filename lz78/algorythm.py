@@ -1,6 +1,8 @@
 """
 LZ78 class
 """
+
+import time
 class LZ78:
     """
     lz78 class
@@ -33,22 +35,30 @@ class LZ78:
         return output
 
     @staticmethod
-    def decode(sequence):
+    def decode(path):
         """
         decodes binary sequence
         """
+
         dictionary = {0: b""}
         output = b""
 
-        for entry in sequence:
-            prefix_index, suffix = entry
+        with open(path, "rb") as file:
 
-            prefix = dictionary[prefix_index]
+            length = int(int.from_bytes(file.read(1), byteorder="big"))
+            counter = 1
+            file.read(length)
 
-            decoded = prefix + suffix
+            try:
+                while byte := file.read(4):
+                    number = int.from_bytes(byte[:3], byteorder="big")
+                    character = bytes([byte[3]])
+                    decoded = dictionary[number] + character
+                    output += decoded
+                    dictionary[counter] = decoded
+                    counter += 1
 
-            output += decoded
+            except IndexError:
+                output += byte
 
-            dictionary[len(dictionary)] = decoded
-
-        return output
+            return output

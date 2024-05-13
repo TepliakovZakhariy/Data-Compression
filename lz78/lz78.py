@@ -2,8 +2,7 @@
 LZ78 
 """
 
-from lz78.algorythm import LZ78
-
+from algorythm import LZ78
 
 class Codder:
     """
@@ -20,8 +19,6 @@ class Codder:
 
         encoded_data = LZ78.encode(image)
 
-        file_type = path[::-1].split(".", maxsplit=1)[0][::-1]
-        file_path = path[::-1].split(".", maxsplit=1)[1][::-1] + "." + LZ78.name.lower()
         file_type_previous = path.split(".", maxsplit=1)[-1]
         byte_type = bytes(file_type_previous, encoding="latin1")
         length = len(file_type_previous).to_bytes(1, byteorder="big")
@@ -35,30 +32,14 @@ class Codder:
                 file.write(val0)
                 file.write(value[1])
 
-        return file_path, file_type, LZ78()
 
     @staticmethod
     def decoding(path: str, path_to_save: str):
         """
         decodes
         """
-        with open(path, "rb") as file:
-            encoded_data = []
 
-            length = int(int.from_bytes(file.read(1), byteorder="big"))
-
-            file.read(length)
-
-            while len(byte := file.read(4)) == 4:
-
-                number = int.from_bytes(byte[:3], byteorder="big")
-                character = bytes([byte[3]])
-                encoded_data.append((number, character))
-
-        if len(byte) != 4:
-            encoded_data.append((0, byte))
-
-        decoded = LZ78.decode(encoded_data)
+        decoded = LZ78.decode(path)
 
         with open(path_to_save, "wb") as file:
             file.write(decoded)
@@ -75,11 +56,3 @@ class Codder:
             length = int(int.from_bytes(file.read(1), byteorder="big"))
 
             return str(file.read(length))[2:-1]
-
-
-# if __name__ == "__main__":
-
-#     file_m = Codder()
-
-#     encoded = file_m.encoding("lz78\high.jpg")
-#     decoded = file_m.decoding("lz78\high.lz78")
