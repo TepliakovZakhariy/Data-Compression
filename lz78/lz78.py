@@ -2,7 +2,8 @@
 LZ78 
 """
 
-from algorythm import LZ78
+from lz78.algorythm import LZ78
+
 
 class Codder:
     """
@@ -31,7 +32,6 @@ class Codder:
                 val0 = val0.to_bytes(3, byteorder="big")
                 file.write(val0)
                 file.write(value[1])
-
 
     @staticmethod
     def decoding(path: str, path_to_save: str):
