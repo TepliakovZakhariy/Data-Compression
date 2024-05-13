@@ -1,5 +1,7 @@
 from time import time
 from random import randint
+
+
 class DoubleNode:
     def __init__(self, data, prev = None, nxt = None) -> None:
         self.data =data
@@ -106,80 +108,81 @@ class Huffman:
                     node = node.next
             tree_len -= 1
         huffman_code = {rf"{item[0]}": item[1] for item in tree[0]}
-        encoded_text = ''.join(huffman_code[text[i: i + self.block_size]] for i in range(0, len(text), self.block_size))
-        return encoded_text, huffman_code
+        temp = ""
+        encoded_bytes = bytearray()
+        for i in range(0, len(text), self.block_size):
+            temp += huffman_code[text[i: i + self.block_size]]
+            while len(temp) >= 8:
+                encoded_bytes.append(int(temp[0:8], 2))
+                temp = temp[8:]
+        if temp:
+            encoded_bytes.append(int(f"{temp:0<8}", 2))
+        return encoded_bytes, huffman_code
 
-    def decode(self, code: str, coding_dict: dict[str, str], byte = False, extra = ("", {}, "")) -> str:
-        true_encoded_text, true_coding_dict, true_decoded_text = extra
-        true_decoded_text = true_decoded_text[0] if true_decoded_text else ""
+    def decode(self, code: str, coding_dict: dict[str, str], reverse = True, extra = ("", {}, "")) -> str:
+
+        true_encoded_bytes, true_coding_dict, true_decoded_text = extra
         decoded_text = ""
         temp = ""
-        if byte:
-            zeros = 8 - len(bin(code[0])) + 2 if code else 0
-            myhex = code.hex()
-            myint = int(myhex, 16)
-            binary_string = "0"*zeros + "{:08b}".format(myint)
-            end_k = 0
-            min_len = len(min(coding_dict.keys(), key=len))
-            max_len = len(max(coding_dict.keys(), key=len))
-            string_len = len(binary_string)
-            true_coding_dict = {v: c for c, v in true_coding_dict.items()}
-            res = true_coding_dict == coding_dict
+        code_lst = list(code)
+        codezero = code[0]
+        zeros = 8 - len(bin(code[0])) + 2 if code else 0
+        myhex = code.hex()
+        myint = int(myhex, 16)
+        binary_string = "0"*zeros + "{:08b}".format(myint)
+        end_k = 0
+        true_coding_dict = {v: c for c, v in true_coding_dict.items()}
+        res = true_coding_dict == coding_dict
+        if reverse:
+            coding_dict = {v: c for c, v in coding_dict.items()}
+        else:
             print(res)
             if not res:
                 print(set(true_coding_dict.keys()).difference(coding_dict.keys()))
                 print(set(true_coding_dict.values()).difference(coding_dict.values()))
-            # print(binary_string == true_encoded_text)
-            for i, els in enumerate(zip(true_encoded_text, binary_string)):
-                if els[0] != els[1]:
-                    print(i , true_encoded_text[i -20: i + 20], binary_string[i - 20: i + 20])
-            
-            sum_time = 0
-            counter = 0
-            for char in binary_string:
-                if end_k % 100000 == 0:
-                    print(end_k / string_len)
-                end_k += 1
-                temp += char
-                counter += 1
-                start = time()
-                if counter >= min_len and temp in coding_dict:
-                    decoded_text += coding_dict[temp]
-                    temp = ""
-                    counter = 0
-                elif counter > max_len:
-                    print(temp)
-                    print(end_k / string_len)
-                    break
-                sum_time += time() - start
+            print(code == true_encoded_bytes)
+        min_len = len(min(coding_dict.keys(), key=len))
+        max_len = len(max(coding_dict.keys(), key=len))
+        string_len = len(binary_string)
+        sum_time = 0
+        counter = 0
+        for char in binary_string:
+            if end_k % 100000 == 0:
+                print(end_k / string_len)
+            end_k += 1
+            temp += char
+            counter += 1
+            start = time()
+            if counter >= min_len and temp in coding_dict:
+                decoded_text += coding_dict[temp]
+                temp = ""
+                counter = 0
+            elif counter > max_len:
+                print(temp)
+                print(end_k / string_len)
+                break
+            sum_time += time() - start
+        if not reverse:
             print(f"time:", sum_time)
             print(decoded_text == true_decoded_text)
-            return (decoded_text, decoded_text == true_decoded_text,)
-        reverse=dict((v,k) for k,v in coding_dict.items())
-        for char in code:
-            temp += char
-            if temp in reverse:
-                decoded_text += reverse[temp]
-                temp = ""
-        return (decoded_text, decoded_text == true_decoded_text,)
+        return decoded_text, decoded_text == true_decoded_text
 
     def encode_file(self, path: str, encoding: str):
         with open(path, 'rb') as file:
             text = file.read()
             text_str = text.decode(encoding)
 
-        encoded_text, coding_dict = self.encode(text_str)
+        encoded_bytes, coding_dict = self.encode(text_str)
 
         with open('encoded_'+path.split(".", 1)[0], 'wb') as file:
             sorted_coding_dict = sorted(coding_dict.items(), key=lambda els: len(els[0]), reverse=True)
             encoded_dict = ",".join(rf"{el}:{code}" for el, code in sorted_coding_dict)
-            bits_to_bytes = bytes(int(encoded_text[i:i+8],2) if i + 8 < len(encoded_text) else int(f"{encoded_text[i:i+8]:0<8}", 2) for i in range(0, len(encoded_text),8))
             front_string = ".".join([str(len(coding_dict.keys())), str(self.block_size), str(len(sorted_coding_dict[-1][0]))]) + "."
-            file.write((front_string+path.replace(";", "")+";"+encoded_dict+";").encode(encoding)+bits_to_bytes)
+            file.write((front_string+path.replace(";", "")+";"+encoded_dict+";").encode(encoding)+encoded_bytes)
         print("encoded")
-        return encoded_text, coding_dict, self.decode(encoded_text, coding_dict)
+        return encoded_bytes, coding_dict, self.decode(encoded_bytes, coding_dict)[0]
 
-    def decode_file(self, path: str, encoding: str, extra):
+    def decode_file(self, path: str, encoding: str, extra, best_block, best_decoded):
         with open(path, "rb") as file:
             text = file.read()
         coding_text_dict = text.decode(encoding)
@@ -222,26 +225,32 @@ class Huffman:
                         code_time = True
                         continue
                 chars += sym
-        print("created_dict")
         code_i = len(coding_text_dict[:no_dict_i].encode(encoding)) + 1
         code = text[code_i:]
 
-        decoded_text, correct = self.decode(code, coding_dict, True, extra)
+        decoded_text, correct = self.decode(code, coding_dict, False, extra)
 
+        print("created_dict")
+        if not best_block or (new_len:=len(decoded_text)) < len(best_decoded):
+            best_block = self.block_size
+            best_decoded = decoded_text
         with open("decoded_" + last_path, "wb") as img:
             img.write(decoded_text.encode(encoding))
         print("decoded")
-        return correct
+        return correct, best_block, best_decoded
 
 
 
 if __name__ == "__main__":
     lst = []
-    for _ in range(100):
-
-        huffman = Huffman(randint(1, 100))
+    best_block = None
+    best_decoded = None
+    for _ in range(1, 30):
+        huffman = Huffman(_)
         name = "tree.jpg"
-        encoded_text, coding_dict, decoded_text = huffman.encode_file(name, "latin-1")
-        if not huffman.decode_file("encoded_"+name.split(".", 1)[0], "latin-1", (encoded_text, coding_dict, decoded_text)):
+        encoded_bytes, coding_dict, decoded_text = huffman.encode_file(name, "latin-1")
+        res, best_block, best_decoded = huffman.decode_file("encoded_"+name.split(".", 1)[0], "latin-1", (encoded_bytes, coding_dict, decoded_text), best_block, best_decoded)
+        if not res:
             lst += [_]
+    print(best_block)
     print(lst)
