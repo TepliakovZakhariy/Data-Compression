@@ -1,7 +1,5 @@
 """LZW compression algorithm"""
 
-from os import path as os_path
-
 class LZW:
     '''LZW compression algorithm'''
 
@@ -12,7 +10,8 @@ class LZW:
             text = f.readline()
         return text.split(b"|", maxsplit=1)[0].decode()
 
-    def encode(self, file_bytes: bytes) -> tuple[bytes, int]:
+    @staticmethod
+    def encode(file_bytes: bytes) -> tuple[bytes, int]:
         '''Compresses the bytes'''
 
         if not file_bytes:
@@ -48,7 +47,8 @@ class LZW:
 
         return bytes(encoded_text), bytes_amount
 
-    def decode(self, code: bytes, bytes_per_code: int) -> bytes:
+    @staticmethod
+    def decode(code: bytes, bytes_per_code: int) -> bytes:
         '''Decompresses the bytes'''
 
         dictionary = {i: bytes([i]) for i in range(256)}
@@ -79,20 +79,19 @@ class LZW:
 
         return bytes(decoded_text)
 
-    def encode_file(self, path: str, file_name: str):
+    @staticmethod
+    def encode_file(path: str, file_name: str):
         '''Compresses the file'''
 
         with open(path, "rb") as file:
             file_bytes = file.read()
 
-        file = os_path.basename(path)
-
-        try:
-            file_extension = file.split(".")[1]
-        except IndexError:
+        if '.' in path:
+            file_extension = path.split(".")[-1]
+        else:
             file_extension = ""
 
-        encoded_text, bytes_amount = self.encode(file_bytes)
+        encoded_text, bytes_amount = LZW.encode(file_bytes)
 
         with open(file_name, "wb") as file:
             file.write(
@@ -103,7 +102,8 @@ class LZW:
                 + encoded_text
             )
 
-    def decode_file(self, path: str, file_name: str):
+    @staticmethod
+    def decode_file(path: str, file_name: str):
         '''Decompresses the file'''
 
         with open(path, "rb") as file:
@@ -113,7 +113,7 @@ class LZW:
         file_extension = file_extension.decode()
         bytes_amount = int.from_bytes(bytes_amount, "big")
 
-        decoded_text = self.decode(encoded_text, bytes_amount)
+        decoded_text = LZW.decode(encoded_text, bytes_amount)
 
         with open(file_name, "wb") as file:
             file.write(decoded_text)
