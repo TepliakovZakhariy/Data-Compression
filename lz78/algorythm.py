@@ -51,7 +51,7 @@ class LZ78:
 
             try:
                 while byte := file.read(4):
-                    number = int.from_bytes(byte[:3], byteorder="big")
+                    number = int.from_bytes(byte[:3], "big")
                     character = bytes([byte[3]])
                     decoded = dictionary[number] + character
                     output += decoded
