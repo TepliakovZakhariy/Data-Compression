@@ -17,6 +17,7 @@ class App(customtkinter.CTk):
 
         self.browsed_filename = ""
         self.file_to_compress_path = ""
+        self.extension = ""
 
         # create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250)
@@ -77,29 +78,7 @@ class App(customtkinter.CTk):
 
         # create second frame
         self.decompress_frame = customtkinter.CTkFrame(self.tabview.tab("Decompress"))
-        self.decompress_var = tkinter.IntVar(value=0)
         self.decompress_frame.pack()
-        self.decompress_button_1 = customtkinter.CTkRadioButton(
-            text="Oleg4",
-            master=self.decompress_frame,
-            variable=self.decompress_var,
-            value=4,
-        )
-        self.decompress_button_1.pack(padx=10, pady=10)
-        self.decompress_button_2 = customtkinter.CTkRadioButton(
-            text="Oleg5",
-            master=self.decompress_frame,
-            variable=self.decompress_var,
-            value=5,
-        )
-        self.decompress_button_2.pack(padx=10, pady=10)
-        self.decompress_button_3 = customtkinter.CTkRadioButton(
-            text="Oleg6",
-            master=self.decompress_frame,
-            variable=self.decompress_var,
-            value=6,
-        )
-        self.decompress_button_3.pack(padx=10, pady=10)
 
         # create decompress browse file button
         self.decompress_browse_button = customtkinter.CTkButton(
@@ -154,6 +133,7 @@ class App(customtkinter.CTk):
                 "File Error", "Choose the method of compression"
             )
         else:
+
             self.file_to_compress_name.configure(state="normal")
             self.file_to_compress_name.delete(0, "end")
             self.file_to_compress_name.insert(
@@ -174,15 +154,33 @@ class App(customtkinter.CTk):
         )
         self.file_to_decompress_name.configure(state="disabled")
         self.file_to_decompress_path = self.file_to_decompress_name.get()
-        print(f"res: {self.file_to_decompress_path, self.decompress_var.get()}")
+        self.extension = self.file_to_decompress_path.split(".")[-1]
+        print(f"res: {self.file_to_decompress_path, self.extension}")
+        if self.extension == "lz78":
+            self.decompressed_filetype = Codder.get_extension(
+                self.file_to_decompress_path
+            )
+        else:
+            tkinter.messagebox.showerror("File Error", "Unknown type of encoding")
 
     def SaveDecompressedFile(self):
         if not self.file_to_decompress_path:
             tkinter.messagebox.showerror("File Error", "Choose the file to decompress")
         else:
-            file = filedialog.asksaveasfile(title="Save File", defaultextension=".oleg")
-            with open(file.name, "w", encoding="utf-8") as new_file:
-                new_file.write(self.file_to_decompress_path)
+            file = filedialog.asksaveasfile(
+                title="Save File", defaultextension=f".{self.decompressed_filetype}"
+            )
+            if self.extension == "lz78":
+                Codder.decoding(self.file_to_decompress_path, file.name)
+
+                tkinter.messagebox.showerror("Success", "Success")
+                self.file_to_compress_name.configure(state="normal")
+                self.file_to_compress_name.delete(0, "end")
+                self.file_to_compress_name.configure(state="disabled")
+            else:
+                tkinter.messagebox.showerror(
+                    "File Error", "Unknown type of encoding in saving"
+                )
 
     def SaveCompressedFile(self):
         if not self.file_to_compress_path:
