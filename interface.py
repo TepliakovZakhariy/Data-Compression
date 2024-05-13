@@ -4,6 +4,7 @@ from tkinter import filedialog
 import tkinter.messagebox
 import customtkinter
 import tkinter.test
+from lz78.lz78 import Codder
 
 customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("dark-blue")
@@ -15,6 +16,7 @@ class App(customtkinter.CTk):
         super().__init__()
 
         self.browsed_filename = ""
+        self.file_to_compress_path = ""
 
         # create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250)
@@ -31,13 +33,13 @@ class App(customtkinter.CTk):
 
         # create first frame
         self.compress_frame = customtkinter.CTkFrame(self.tabview.tab("Compress"))
-        self.compress_var = tkinter.IntVar(value=0)
+        self.compress_var = tkinter.StringVar(value="")
         self.compress_frame.pack()
         self.compress_button_1 = customtkinter.CTkRadioButton(
-            text="Oleg1",
+            text="LZ78",
             master=self.compress_frame,
             variable=self.compress_var,
-            value=1,
+            value="lz78",
         )
         self.compress_button_1.pack(padx=10, pady=10)
         self.compress_button_2 = customtkinter.CTkRadioButton(
@@ -147,15 +149,21 @@ class App(customtkinter.CTk):
         self.compress_save_button.pack(pady=10)
 
     def BrowseFileToCompress(self):
-        self.file_to_compress_name.configure(state="normal")
-        self.file_to_compress_name.delete(0, "end")
-        self.file_to_compress_name.insert(
-            0,
-            filedialog.askopenfilename(initialdir=os.getcwd(), title="Select File"),
-        )
-        self.file_to_compress_name.configure(state="disabled")
-        self.file_to_compress_path = self.file_to_compress_name.get()
-        print(f"res: {self.file_to_compress_path, self.compress_var.get()}")
+        if not self.compress_var.get():
+                tkinter.messagebox.showerror(
+                "File Error", "You didn't choose the method of compression"
+            )
+        else:
+            self.file_to_compress_name.configure(state="normal")
+            self.file_to_compress_name.delete(0, "end")
+            self.file_to_compress_name.insert(
+                0,
+                filedialog.askopenfilename(initialdir=os.getcwd(), title="Select File"),
+            )
+            self.file_to_compress_name.configure(state="disabled")
+            self.file_to_compress_path = self.file_to_compress_name.get()
+
+            print(f"res: {self.file_to_compress_path, self.compress_var.get()}")
 
     def BrowseFileToDecompress(self):
         self.file_to_decompress_name.configure(state="normal")
@@ -183,16 +191,32 @@ class App(customtkinter.CTk):
             tkinter.messagebox.showerror(
                 "File Error", "You didn't choose the file to decompress"
             )
-        else:
-            file = filedialog.asksaveasfile(title="Save File", defaultextension=".oleg")
-            with open(file.name, "w", encoding="utf-8") as new_file:
-                new_file.write(self.file_to_compress_path)
 
+        else:
+            extension = self.compress_var.get()
+            if not extension:
+                tkinter.messagebox.showerror(
+                "File Error", "You didn't choose the method of compression"
+            )
+
+            file = filedialog.asksaveasfile(
+                title="Save File", defaultextension = f".{extension}"
+                )
+
+            if extension == "lz78":
+                Codder.encoding(self.file_to_compress_path, file.name)
+
+                tkinter.messagebox.showerror(
+                    "Success", "Success"
+                )
+                self.file_to_compress_name.configure(state="normal")
+                self.file_to_compress_name.delete(0, "end")
+                self.file_to_compress_name.configure(state="disabled")
 
 if __name__ == "__main__":
     app = App()
     app.title("Sigma App")
-    app.iconbitmap("..\\sticker_019.ico")
+    app.iconbitmap("sticker_019.ico")
     app.geometry("600x400")
     app.resizable(width=False, height=False)
     app.mainloop()
