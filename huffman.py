@@ -123,44 +123,55 @@ class Huffman:
             binary_string = "0"*zeros + "{:08b}".format(myint)
         else:
             binary_string = ""
-        k = 0
         if reverse:
             coding_dict = {v: c for c, v in coding_dict.items()}
-        threshold = 0
         min_len = len(min(coding_dict.keys(), key=len))
-        string_len = len(binary_string)
         counter = 0
         for char in binary_string:
-            if k /string_len >= threshold/100:
-                print(f"{threshold}%")
-                threshold += 10
-            k += 1
             temp += char
             counter += 1
             if counter >= min_len and temp in coding_dict:
                 decoded_text += coding_dict[temp]
                 temp = ""
                 counter = 0
-        print("100%")
         return decoded_text
 
-    def encode_file(self, path: str, encoding: str):
-        with open(path, 'rb') as file:
+    @staticmethod
+    def get_extension(encoded_path: str) -> None:
+        encoding="latin-1"
+        with open(encoded_path, "rb") as file:
+            encoded_text = file.read().decode(encoding)
+        extension = ""
+        for sym in encoded_text:
+            if sym == "|":
+                break
+            if sym == "/":
+                extension = ""
+                continue
+            extension += sym
+        return extension
+
+    def encode_file(self, file_path: str, encoded_path: str) -> None:
+        encoding = "latin-1"
+
+
+        with open(file_path, 'rb') as file:
             text = file.read()
             text_str = text.decode(encoding)
 
         encoded_bytes, coding_dict = self.encode(text_str)
 
-        with open('encoded_'+path.split(".", 1)[0], 'wb') as file:
+        with open(encoded_path, 'wb') as file:
             sorted_coding_dict = sorted(coding_dict.items(), key=lambda els: len(els[0]), reverse=True)
             encoded_dict = ",".join(rf"{el}:{code}" for el, code in sorted_coding_dict)
-            front_string = "/".join([str(len(coding_dict.keys())), str(self.block_size), str(len(sorted_coding_dict[-1][0]))]) + "/"
-            file.write((front_string+path+"|"+encoded_dict+";").encode(encoding)+encoded_bytes)
-        print("encoded")
+            front_string = "/".join([str(len(coding_dict.keys())), str(self.block_size), str(len(sorted_coding_dict[-1][0])), file_path.split(".")[-1]])
+            file.write((front_string+"|"+encoded_dict+";").encode(encoding)+encoded_bytes)
         return encoded_bytes, coding_dict
 
-    def decode_file(self, path: str, encoding: str):
-        with open(path, "rb") as file:
+
+    def decode_file(self, encoded_path: str, new_path: str) -> None:
+        encoding = "latin-1"
+        with open(encoded_path, "rb") as file:
             text = file.read()
         coding_text_dict = text.decode(encoding)
         info_extension = ""
@@ -173,11 +184,10 @@ class Huffman:
         for i, sym in enumerate(coding_text_dict):
             if not creating_dict:
                 if sym == "|":
-                    codes_left, block_size, smallest_block, prev_path = info_extension.split("/", 3)
+                    codes_left, block_size, smallest_block, _ = info_extension.split("/", 3)
                     codes_left= int(codes_left)
                     block_size = int(block_size)
                     smallest_block = int(smallest_block)
-                    
                     creating_dict = True
                     continue
                 info_extension += sym
@@ -202,12 +212,10 @@ class Huffman:
                 chars += sym
         code_i = len(coding_text_dict[:no_dict_i].encode(encoding)) + 1
         code = text[code_i:]
-        print("created_dict")
 
         decoded_text = self.decode(code, coding_dict, False)
-        with open(f"decoded_{prev_path}", "wb") as img:
+        with open(new_path, "wb") as img:
             img.write(decoded_text.encode(encoding))
-        print("decoded")
 
 
 
@@ -217,6 +225,10 @@ if __name__ == "__main__":
     best_encoded = None
     for _ in range(1, 2):
         huffman = Huffman(_)
-        name = "What_ Meme (1).mp4"
-        encoded_bytes, coding_dict = huffman.encode_file(name, "latin-1")
-        huffman.decode_file("encoded_"+name.split(".", 1)[0], "latin-1")
+        file_path = "lab2.ipynb"
+        encoded_path = "lab2.huff"
+        new_path = "lab2.ipynb"
+
+        huffman.encode_file(file_path, encoded_path)
+        print(huffman.get_extension(encoded_path))
+        huffman.decode_file(encoded_path, new_path)
