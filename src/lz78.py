@@ -53,8 +53,6 @@ class Codder:
         with open(path_to_save, "wb") as file:
             file.write(decoded)
 
-        return decoded
-
     @staticmethod
     def get_extension(path):
         """
@@ -62,6 +60,7 @@ class Codder:
         """
         with open(path, "rb") as file:
 
+            file.read(1)
             length = int(int.from_bytes(file.read(1), byteorder="big"))
 
             return str(file.read(length))[2:-1]
