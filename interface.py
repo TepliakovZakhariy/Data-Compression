@@ -209,7 +209,6 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     app = App()
     app.title("Sigma App")
-    app.iconbitmap("../sticker_019.ico")
-    app.geometry("600x400")
+    app.iconbitmap("sticker_019.ico")
     app.resizable(width=False, height=False)
     app.mainloop()
