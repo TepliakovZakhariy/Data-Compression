@@ -62,7 +62,7 @@ class App(customtkinter.CTk):
             fg_color="transparent",
             border_width=2,
             text_color=("gray10", "#DCE4EE"),
-            command=self.SelectFileCompress,
+            command=self.BrowseFileToCompress,
         )
         self.compress_browse_button.pack(pady=10)
 
@@ -106,7 +106,7 @@ class App(customtkinter.CTk):
             fg_color="transparent",
             border_width=2,
             text_color=("gray10", "#DCE4EE"),
-            command=self.SelectFileDecompress,
+            command=self.BrowseFileToDecompress,
         )
         self.decompress_browse_button.pack(pady=10)
 
@@ -131,11 +131,22 @@ class App(customtkinter.CTk):
             fg_color="transparent",
             border_width=2,
             text_color=("gray10", "#DCE4EE"),
-            command=self.SelectWhereToSaveFile,
+            command=self.SaveDecompressedFile,
         )
         self.decompress_save_button.pack(pady=10)
 
-    def SelectFileCompress(self):
+        # create compress save file button
+        self.compress_save_button = customtkinter.CTkButton(
+            master=self.tabview.tab("Compress"),
+            text="Save File",
+            fg_color="transparent",
+            border_width=2,
+            text_color=("gray10", "#DCE4EE"),
+            command=self.SaveCompressedFile,
+        )
+        self.compress_save_button.pack(pady=10)
+
+    def BrowseFileToCompress(self):
         self.file_to_compress_name.configure(state="normal")
         self.file_to_compress_name.delete(0, "end")
         self.file_to_compress_name.insert(
@@ -143,9 +154,10 @@ class App(customtkinter.CTk):
             filedialog.askopenfilename(initialdir=os.getcwd(), title="Select File"),
         )
         self.file_to_compress_name.configure(state="disabled")
-        print(f"res: {self.file_to_compress_name.get(), self.compress_var.get()}")
+        self.file_to_compress_path = self.file_to_compress_name.get()
+        print(f"res: {self.file_to_compress_path, self.compress_var.get()}")
 
-    def SelectFileDecompress(self):
+    def BrowseFileToDecompress(self):
         self.file_to_decompress_name.configure(state="normal")
         self.file_to_decompress_name.delete(0, "end")
         self.file_to_decompress_name.insert(
@@ -153,25 +165,34 @@ class App(customtkinter.CTk):
             filedialog.askopenfilename(initialdir=os.getcwd(), title="Select File"),
         )
         self.file_to_decompress_name.configure(state="disabled")
-        self.browsed_filename = self.file_to_decompress_name.get()
-        print(f"res: {self.file_to_decompress_name.get(), self.decompress_var.get()}")
+        self.file_to_decompress_path = self.file_to_decompress_name.get()
+        print(f"res: {self.file_to_decompress_path, self.decompress_var.get()}")
 
-    def SelectWhereToSaveFile(self):
-        if not self.browsed_filename:
+    def SaveDecompressedFile(self):
+        if not self.file_to_decompress_path:
             tkinter.messagebox.showerror(
                 "File Error", "You didn't choose the file to decompress"
             )
         else:
             file = filedialog.asksaveasfile(title="Save File", defaultextension=".oleg")
-            if file:
-                with open(self.browsed_filename, "w", encoding="utf-8") as new_file:
-                    new_file.write(self.browsed_filename)
+            with open(file.name, "w", encoding="utf-8") as new_file:
+                new_file.write(self.file_to_decompress_path)
+
+    def SaveCompressedFile(self):
+        if not self.file_to_compress_path:
+            tkinter.messagebox.showerror(
+                "File Error", "You didn't choose the file to decompress"
+            )
+        else:
+            file = filedialog.asksaveasfile(title="Save File", defaultextension=".oleg")
+            with open(file.name, "w", encoding="utf-8") as new_file:
+                new_file.write(self.file_to_compress_path)
 
 
 if __name__ == "__main__":
     app = App()
     app.title("Sigma App")
-    app.iconbitmap("..\\2 semester\miniproject 3\sticker_019.ico")
+    app.iconbitmap("..\\sticker_019.ico")
     app.geometry("600x400")
     app.resizable(width=False, height=False)
     app.mainloop()
