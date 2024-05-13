@@ -4,7 +4,6 @@ LZ78
 
 from algorythm import LZ78
 
-
 class Codder:
     """
     codder class
