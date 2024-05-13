@@ -65,6 +65,16 @@ class Codder:
 
         return decoded
 
+    @staticmethod
+    def get_extension(path):
+        """
+        gets extension from path
+        """
+        with open(path, 'rb') as file:
+
+            length = int(int.from_bytes(file.read(1), byteorder='big'))
+
+            return str(file.read(length))[2:-1]
 # if __name__ == "__main__":
 
 #     file_m = Codder()
