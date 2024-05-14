@@ -176,6 +176,10 @@ While implementing this algorithm we decided to try block coding. It isn't regul
 | txt            | 2.8 MB              | 1.7 MB                 | 1.8s             | 2.1s               |
 | XML            | 97.6 MB             | 62.3 MB                | 48s              | 3m                 |
 
+#### Conclusion
+
+The Huffman algorithm works well if the file contains characters that occur more often than others. It is also better if there are not too many different characters.
+
 ### LZ77
 
 The **LZ77** algorithm is a lossless data compression algorithm created by Abraham Lempel and Jacob Ziv in 1977. The main idea of this algorithm is to get rid of all repetitions. It does this very well, but it takes too much time.
@@ -220,3 +224,7 @@ The **LZ77** algorithm is a lossless data compression algorithm created by Abrah
 | ipynb          | 179 KB              | 483 KB                 | 1.2s             | 0.5s               |
 | png            | 428 KB              | 1.6 MB                 | 3s               | 1s                 |
 | txt            | 2.8 MB              | 6.2 MB                 | 11s              | 2s                 |
+
+#### Conclusion
+
+The LZ77 algorithm is very good if there are many repeating sequences. Otherwise, it needs a very large buffer size.
