@@ -1,18 +1,19 @@
 """LZW compression algorithm"""
 
+
 class LZW:
-    '''LZW compression algorithm'''
+    """LZW compression algorithm"""
 
     @staticmethod
     def get_extension(file: str) -> str:
-        '''Returns the extension of the file'''
+        """Returns the extension of the file"""
         with open(file, "rb") as f:
             text = f.readline()
         return text.split(b"|", maxsplit=1)[0].decode()
 
     @staticmethod
     def encode(file_bytes: bytes) -> tuple[bytes, int]:
-        '''Compresses the bytes'''
+        """Compresses the bytes"""
 
         if not file_bytes:
             return b"", 1
@@ -49,7 +50,7 @@ class LZW:
 
     @staticmethod
     def decode(code: bytes, bytes_per_code: int) -> bytes:
-        '''Decompresses the bytes'''
+        """Decompresses the bytes"""
 
         if not code:
             return b""
@@ -84,12 +85,12 @@ class LZW:
 
     @staticmethod
     def encode_file(path: str, file_name: str):
-        '''Compresses the file'''
+        """Compresses the file"""
 
         with open(path, "rb") as file:
             file_bytes = file.read()
 
-        if '.' in path:
+        if "." in path:
             file_extension = path.split(".")[-1]
         else:
             file_extension = ""
@@ -107,7 +108,7 @@ class LZW:
 
     @staticmethod
     def decode_file(path: str, file_name: str):
-        '''Decompresses the file'''
+        """Decompresses the file"""
 
         with open(path, "rb") as file:
             text = file.read()
