@@ -11,6 +11,7 @@
   - [LZ78](#lz78)
   - [Huffman](#huffman)
   - [LZ77](#lz77)
+- [Collaborators](#collaborators)
 
 ## Installation
 
