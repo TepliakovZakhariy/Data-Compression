@@ -8,7 +8,7 @@ A program for compressing files using such algorithms as **LZW**, **Huffman code
 - [Description of algorithms](#description-of-algorithms)
   - [LZW](#lzw)
   - [LZ78](#lz78)
-  - [Huffman coding](#huffman-coding)
+  - [Huffman](#huffman)
   - [LZ77](#lz77)
   - [Deflate](#deflate)
 
