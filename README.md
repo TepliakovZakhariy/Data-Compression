@@ -83,6 +83,10 @@ A notable feature of the LZW algorithm is its simplicity of implementation. The 
 | txt            | 2.8 MB              | 1.2 MB                 | 1.7s             | 0.7s               |
 | XML            | 97.6 MB             | 35.6 MB                | 56s              | 16s                |
 
+#### Conclusion
+
+The LZW algorithm is fast enough and is a great option when you need to compress a text file, as it can compress up to 70% of the size. For other extensions, the algorithm performs worse and can make the compressed file larger than the original.
+
 ### LZ78
 
 **LZ78** is one of the data compression algorithms invented by Abraham Lempel and Jakob Ziv, which is where the abbreviation actually comes from. The algorithm is based on the principle of passing two elements to the output: an index and an element. Our output itself looks like a conditional list with a very large number of tuples containing the two elements already mentioned. Elements are passed according to the principle: if an element or a sequence of elements has not been encountered before, we write it to our list, and give the index of the largest sequence that has already been encountered and the last element in the output.
@@ -109,6 +113,10 @@ A notable feature of the LZW algorithm is its simplicity of implementation. The 
 | png            | 428 KB              | 640 KB                 | 0.5s             | 0.5s               |
 | txt            | 2.8 MB              | 1.4 MB                 | 1.8s             | 1s                 |
 | XML            | 97.6 MB             | 42.6 MB                | 57s              | 20s                |
+
+#### Conclusion
+
+LZ78 is very effective with text files and files with many repetitive sequences. It works worse with already good compressed files (like .png or .jpg).
 
 ### Huffman
 
@@ -167,3 +175,48 @@ While implementing this algorithm we decided to try block coding. It isn't regul
 | png            | 428 KB              | 431 KB                 | 0.6s             | 0.8s               |
 | txt            | 2.8 MB              | 1.7 MB                 | 1.8s             | 2.1s               |
 | XML            | 97.6 MB             | 62.3 MB                | 48s              | 3m                 |
+
+### LZ77
+
+The **LZ77** algorithm is a lossless data compression algorithm created by Abraham Lempel and Jacob Ziv in 1977. The main idea of this algorithm is to get rid of all repetitions. It does this very well, but it takes too much time.
+
+#### Implementation
+
+- **encode()**
+
+  The **encode** method takes a string as input.
+  We iterate over the input, find the largest character in the buffer and store the first index, the length of the match, the character that does not match, then convert and add it to the encoded bytes.
+  The function returns encoded bytes.
+
+- **decode()**
+
+  The **decode** function takes encoded text.
+  After that, it converts the text to list of tuple and decodes in this way.
+  For example if we have tuple 0, 0, a. We have to add "a" to encoded text. If the tuple is 1, 2, b. we start from symbol in index - 1 move 2 times to the right and copy those two charecters to coded text.
+
+- **encode_files()**
+
+  The **encode_files** function receives the file path and name for the encoded file.
+  First, the function reads the bytes of the input file and encodes them using the encode() function.
+  After that, the function puts the extension, "|" and encoded_bytes.
+
+- **decode_files()**
+
+  The **decode_files** function takes the path to the encoded file and the name that will be given to the decoded file.
+  We read bytes from the encoded file, convert them to a string, and pass them to the encode function.
+  Then we write the decoded text from this function to the new path.
+
+- **text2list**
+  This function converts text to list by iterating over text and saving iterated part to list when it sees charecter after second comma.
+
+- **get_extension()**
+
+  This function takes an encoded file and returns its original extension, which is necessary for the program itself.
+
+#### Efficiency
+
+| File extension | Initial file weight | Compressed file weight | Compression time | Decompression time |
+| -------------- | ------------------- | ---------------------- | ---------------- | ------------------ |
+| ipynb          | 179 KB              | 483 KB                 | 1.2s             | 0.5s               |
+| png            | 428 KB              | 1.6 MB                 | 3s               | 1s                 |
+| txt            | 2.8 MB              | 6.2 MB                 | 11s              | 2s                 |
