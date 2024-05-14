@@ -2,6 +2,16 @@
 
 A program for compressing files using such algorithms as **LZW**, **Huffman code**, **LZ77** and **LZ78**, **Deflate**.
 
+## Contents
+
+- [Installation](#installation)
+- [Description of algorithms](#description-of-algorithms)
+  - [LZW](#lzw)
+  - [LZ78](#lz78)
+  - [LZ77](#lz77)
+  - [Huffman coding](#huffman-coding)
+  - [Deflate](#deflate)
+
 ## Installation
 
 Requirements: Python 3.11
