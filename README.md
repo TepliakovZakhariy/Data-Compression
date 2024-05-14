@@ -74,6 +74,15 @@ A notable feature of the LZW algorithm is its simplicity of implementation. The 
 
   This function accepts an encoded file and returns its original extension, which is required for the program itself.
 
+#### Efficiency
+
+| File extension | Initial file weight | Compressed file weight | Compression time | Decompression time |
+| -------------- | ------------------- | ---------------------- | ---------------- | ------------------ |
+| ipynb          | 179 KB              | 216 KB                 | 1s               | 0.5s               |
+| png            | 428 KB              | 722 KB                 | 1s               | 0.5s               |
+| txt            | 2.8 MB              | 1.2 MB                 | 1.7s             | 0.7s               |
+| XML            | 97.6 MB             | 35.6 MB                | 56s              | 16s                |
+
 ### LZ78
 
 **LZ78** is one of the data compression algorithms invented by Abraham Lempel and Jakob Ziv, which is where the abbreviation actually comes from. The algorithm is based on the principle of passing two elements to the output: an index and an element. Our output itself looks like a conditional list with a very large number of tuples containing the two elements already mentioned. Elements are passed according to the principle: if an element or a sequence of elements has not been encountered before, we write it to our list, and give the index of the largest sequence that has already been encountered and the last element in the output.
@@ -91,6 +100,15 @@ A notable feature of the LZW algorithm is its simplicity of implementation. The 
 - **get_extension()**
 
   The function **get_extension** reads the file format we have encoded to correctly decode the file in the desired format.
+
+#### Efficiency
+
+| File extension | Initial file weight | Compressed file weight | Compression time | Decompression time |
+| -------------- | ------------------- | ---------------------- | ---------------- | ------------------ |
+| ipynb          | 179 KB              | 154 KB                 | 0.5s             | 0.3s               |
+| png            | 428 KB              | 640 KB                 | 0.5s             | 0.5s               |
+| txt            | 2.8 MB              | 1.4 MB                 | 1.8s             | 1s                 |
+| XML            | 97.6 MB             | 42.6 MB                | 57s              | 20s                |
 
 ### Huffman
 
@@ -140,3 +158,12 @@ While implementing this algorithm we decided to try block coding. It isn't regul
 - **get_extension()**
 
   This function accepts an encoded file and returns its original extension, which is required for the program itself.
+
+#### Efficiency
+
+| File extension | Initial file weight | Compressed file weight | Compression time | Decompression time |
+| -------------- | ------------------- | ---------------------- | ---------------- | ------------------ |
+| ipynb          | 179 KB              | 143 KB                 | 0.3s             | 0.7s               |
+| png            | 428 KB              | 431 KB                 | 0.6s             | 0.8s               |
+| txt            | 2.8 MB              | 1.7 MB                 | 1.8s             | 2.1s               |
+| XML            | 97.6 MB             | 62.3 MB                | 48s              | 3m                 |
