@@ -11,7 +11,6 @@
   - [LZ78](#lz78)
   - [Huffman](#huffman)
   - [LZ77](#lz77)
-  - [Deflate](#deflate)
 
 ## Installation
 
