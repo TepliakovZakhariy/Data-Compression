@@ -3,7 +3,6 @@ import os
 from tkinter import filedialog
 import tkinter.messagebox
 import customtkinter
-import tkinter.test
 from lz77 import LZ77
 from lz78 import Codder
 from lzw import LZW
