@@ -1,13 +1,9 @@
-from time import time
-from random import randint
-
-
 class DoubleNode:
-    def __init__(self, data, prev = None, nxt = None) -> None:
-        self.data =data
+    def __init__(self, data, prev=None, nxt=None) -> None:
+        self.data = data
         self.prev = prev
         self.next = nxt
-    
+
     def __repr__(self) -> str:
         output = f"{self.data}"
         node = self.next
@@ -31,15 +27,16 @@ class Node:
 
     def __lt__(self, other):
         return self.weight < other.weight
-    
+
     def __add__(self, other):
         return Node(self.weight + other.weight, self.chars + other.chars)
-    
+
     def __iter__(self):
         return iter(self.chars)
 
     def __repr__(self):
         return f"node: {self.weight}, {self.chars}"
+
 
 class Huffman:
     def __init__(self, block_size: int = 1) -> None:
@@ -48,20 +45,20 @@ class Huffman:
     def count_frequency(self, text: str) -> dict[str, int]:
         frequency = {}
         for i in range(0, len(text), self.block_size):
-            cur_chars = text[i: i + self.block_size]
+            cur_chars = text[i : i + self.block_size]
             frequency[cur_chars] = frequency.get(cur_chars, 0) + 1
         return frequency
 
     def encode(self, text: str) -> tuple[str, dict[str, str]]:
         if not text:
-            return '', {}
+            return "", {}
         frequency = self.count_frequency(text)
 
-        tree = [Node(weight, [[char,'']]) for char, weight in frequency.items()]
-        tree = sorted(tree, key = lambda node: node.weight)
+        tree = [Node(weight, [[char, ""]]) for char, weight in frequency.items()]
+        tree = sorted(tree, key=lambda node: node.weight)
         tree_len = len(tree)
         if tree_len == 1:
-            return '0'*frequency[text[0]], {text[0]: '0'}
+            return "0" * frequency[text[0]], {text[0]: "0"}
         head = DoubleNode(tree[0])
         node = head
         for el in tree[1:]:
@@ -69,15 +66,15 @@ class Huffman:
             node = node.next
         last_node = None
         while head and head.next:
-            first_min=head.data
-            second_min=head.next.data
+            first_min = head.data
+            second_min = head.next.data
             head = head.next.next
             if head:
                 head.prev = None
             for char in first_min:
-                char[1] = '1' + char[1]
+                char[1] = "1" + char[1]
             for char in second_min:
-                char[1] = '0' + char[1]
+                char[1] = "0" + char[1]
             new_weight = first_min.weight + second_min.weight
             if not head:
                 tree = [first_min + second_min]
@@ -89,8 +86,13 @@ class Huffman:
                 node = head if last_node is None else last_node
                 prev_node = None if last_node is None else last_node.prev
                 while node:
-                    if prev_node and prev_node.data.weight <= new_weight <= node.data.weight:
-                        prev_node.next = DoubleNode(first_min + second_min, prev_node, node)
+                    if (
+                        prev_node
+                        and prev_node.data.weight <= new_weight <= node.data.weight
+                    ):
+                        prev_node.next = DoubleNode(
+                            first_min + second_min, prev_node, node
+                        )
                         last_node = prev_node.next
                         node.prev = last_node
                         break
@@ -105,7 +107,7 @@ class Huffman:
         temp = ""
         encoded_bytes = bytearray()
         for i in range(0, len(text), self.block_size):
-            temp += huffman_code[text[i: i + self.block_size]]
+            temp += huffman_code[text[i : i + self.block_size]]
             while len(temp) >= 8:
                 encoded_bytes.append(int(temp[0:8], 2))
                 temp = temp[8:]
@@ -113,14 +115,14 @@ class Huffman:
             encoded_bytes.append(int(f"{temp:0<8}", 2))
         return bytes(encoded_bytes), huffman_code
 
-    def decode(self, code: str, coding_dict: dict[str, str], reverse = True) -> str:
+    def decode(self, code: str, coding_dict: dict[str, str], reverse=True) -> str:
         decoded_text = ""
         temp = ""
         if code:
             zeros = 8 - len(bin(code[0])) + 2 if code else 0
             myhex = code.hex()
             myint = int(myhex, 16)
-            binary_string = "0"*zeros + "{:08b}".format(myint)
+            binary_string = "0" * zeros + "{:08b}".format(myint)
         else:
             binary_string = ""
         if reverse:
@@ -138,7 +140,7 @@ class Huffman:
 
     @staticmethod
     def get_extension(encoded_path: str) -> None:
-        encoding="latin-1"
+        encoding = "latin-1"
         with open(encoded_path, "rb") as file:
             encoded_text = file.read().decode(encoding)
         extension = ""
@@ -154,20 +156,30 @@ class Huffman:
     def encode_file(self, file_path: str, encoded_path: str) -> None:
         encoding = "latin-1"
 
-
-        with open(file_path, 'rb') as file:
+        with open(file_path, "rb") as file:
             text = file.read()
             text_str = text.decode(encoding)
 
         encoded_bytes, coding_dict = self.encode(text_str)
 
-        with open(encoded_path, 'wb') as file:
-            sorted_coding_dict = sorted(coding_dict.items(), key=lambda els: len(els[0]), reverse=True)
+        with open(encoded_path, "wb") as file:
+            sorted_coding_dict = sorted(
+                coding_dict.items(), key=lambda els: len(els[0]), reverse=True
+            )
             encoded_dict = ",".join(rf"{el}:{code}" for el, code in sorted_coding_dict)
-            front_string = "/".join([str(len(coding_dict.keys())), str(self.block_size), str(len(sorted_coding_dict[-1][0])), file_path.split(".")[-1]])
-            file.write((front_string+"|"+encoded_dict+";").encode(encoding)+encoded_bytes)
+            front_string = "/".join(
+                [
+                    str(len(coding_dict.keys())),
+                    str(self.block_size),
+                    str(len(sorted_coding_dict[-1][0])),
+                    file_path.split(".")[-1],
+                ]
+            )
+            file.write(
+                (front_string + "|" + encoded_dict + ";").encode(encoding)
+                + encoded_bytes
+            )
         return encoded_bytes, coding_dict
-
 
     def decode_file(self, encoded_path: str, new_path: str) -> None:
         encoding = "latin-1"
@@ -184,8 +196,10 @@ class Huffman:
         for i, sym in enumerate(coding_text_dict):
             if not creating_dict:
                 if sym == "|":
-                    codes_left, block_size, smallest_block, _ = info_extension.split("/", 3)
-                    codes_left= int(codes_left)
+                    codes_left, block_size, smallest_block, _ = info_extension.split(
+                        "/", 3
+                    )
+                    codes_left = int(codes_left)
                     block_size = int(block_size)
                     smallest_block = int(smallest_block)
                     creating_dict = True
@@ -206,7 +220,11 @@ class Huffman:
                 code += sym
             else:
                 if sym == ":":
-                    if len(chars) == block_size or codes_left == 1 and len(chars) == smallest_block:
+                    if (
+                        len(chars) == block_size
+                        or codes_left == 1
+                        and len(chars) == smallest_block
+                    ):
                         code_time = True
                         continue
                 chars += sym
@@ -216,19 +234,3 @@ class Huffman:
         decoded_text = self.decode(code, coding_dict, False)
         with open(new_path, "wb") as img:
             img.write(decoded_text.encode(encoding))
-
-
-
-if __name__ == "__main__":
-    lst = []
-    best_block = None
-    best_encoded = None
-    for _ in range(1, 2):
-        huffman = Huffman(_)
-        file_path = "lab2.ipynb"
-        encoded_path = "lab2.huff"
-        new_path = "lab2.ipynb"
-
-        huffman.encode_file(file_path, encoded_path)
-        print(huffman.get_extension(encoded_path))
-        huffman.decode_file(encoded_path, new_path)

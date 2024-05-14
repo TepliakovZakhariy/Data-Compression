@@ -1,5 +1,6 @@
 from time import time
 
+
 class LZ77:
     def __init__(self, buffer_size: int) -> None:
         self.buffer_size = buffer_size
@@ -35,7 +36,9 @@ class LZ77:
                     first_i = i - buffer_i if code_len else 0
                     last_code_len = code_len
             last_el = text[i + last_code_len] if i + last_code_len < text_len else ""
-            encoded_bytes.extend(f"{first_i},{last_code_len},{last_el}".encode(encoding))
+            encoded_bytes.extend(
+                f"{first_i},{last_code_len},{last_el}".encode(encoding)
+            )
             i += last_code_len + 1
         return bytes(encoded_bytes)
 
@@ -86,7 +89,7 @@ class LZ77:
         return extension
 
     def decode_file(self, encoded_path: str, new_path: str):
-        encoding="latin-1"
+        encoding = "latin-1"
         with open(encoded_path, "rb") as file:
             read_bytes = file.read()
 
@@ -94,12 +97,11 @@ class LZ77:
         for i, sym in enumerate(encoded_text):
             if sym == "|":
                 break
-        encoded_text = encoded_text[i + 1:]
+        encoded_text = encoded_text[i + 1 :]
 
         decoded_text = self.decode(encoded_text)
         with open(new_path, "wb") as file:
             file.write(decoded_text.encode(encoding))
-
 
     def decode(self, text: str) -> str:
         i = 0
@@ -107,12 +109,17 @@ class LZ77:
         decoded_text = ""
         for buffer_i, code_len, last_el in code:
             if code_len - buffer_i > 0:
-                encoded_part = decoded_text[i - buffer_i: i] * (code_len // buffer_i + 1)
+                encoded_part = decoded_text[i - buffer_i : i] * (
+                    code_len // buffer_i + 1
+                )
                 decoded_text += encoded_part[:code_len] + last_el
             else:
-                decoded_text += decoded_text[i - buffer_i: i - buffer_i + code_len] + last_el
+                decoded_text += (
+                    decoded_text[i - buffer_i : i - buffer_i + code_len] + last_el
+                )
             i += code_len + 1
         return decoded_text
+
 
 if __name__ == "__main__":
     lz = LZ77(100)
