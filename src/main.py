@@ -1,9 +1,7 @@
 import tkinter
 import os
-from tkinter import filedialog
-import tkinter.messagebox
+from tkinter import filedialog, messagebox
 import customtkinter
-import tkinter.test
 from lz77 import LZ77
 from lz78 import Codder
 from lzw import LZW
@@ -82,14 +80,6 @@ class App(customtkinter.CTk):
         )
         self.compress_button_4.pack(pady=10)
 
-        self.compress_button_5 = customtkinter.CTkRadioButton(
-            text="Deflate",
-            master=self.compress_frame,
-            variable=self.compress_var,
-            value="def",
-        )
-        self.compress_button_5.pack(pady=10)
-
         # create second frame
         self.decompress_frame = customtkinter.CTkFrame(self.tabview.tab("Decompress"))
         self.decompress_frame.pack()
@@ -158,9 +148,7 @@ class App(customtkinter.CTk):
 
     def BrowseFileToCompress(self):
         if not self.compress_var.get():
-            tkinter.messagebox.showerror(
-                "File Error", "Choose the method of compression"
-            )
+            messagebox.showerror("File Error", "Choose the method of compression")
         else:
 
             self.file_to_compress_name.configure(state="normal")
@@ -198,22 +186,18 @@ class App(customtkinter.CTk):
                 self.file_to_decompress_path
             )
         else:
-            tkinter.messagebox.showerror("File Error", "Unknown type of file")
+            messagebox.showerror("File Error", "Unknown type of file")
 
     def SaveCompressedFile(self):
         if not self.compress_var.get():
-            tkinter.messagebox.showerror(
-                "File Error", "Choose the method of compression"
-            )
+            messagebox.showerror("File Error", "Choose the method of compression")
         elif not self.file_to_compress_path:
-            tkinter.messagebox.showerror("File Error", "Choose the file to decompress")
+            messagebox.showerror("File Error", "Choose the file to decompress")
 
         else:
             extension = self.compress_var.get()
             if not extension:
-                tkinter.messagebox.showerror(
-                    "File Error", "Choose the method of compression"
-                )
+                messagebox.showerror("File Error", "Choose the method of compression")
             self.file_to_compress_name.configure(state="normal")
             self.file_to_compress_name.delete(0, "end")
             self.file_to_compress_name.insert(0, "Compression in progress...")
@@ -238,7 +222,7 @@ class App(customtkinter.CTk):
                 elif extension == "huf":
                     self.huffman.encode_file(self.file_to_compress_path, file.name)
 
-                tkinter.messagebox.showinfo(
+                messagebox.showinfo(
                     "Success", "The file has been successfully compressed!"
                 )
                 self.file_to_compress_name.configure(state="normal")
@@ -253,7 +237,7 @@ class App(customtkinter.CTk):
 
     def SaveDecompressedFile(self):
         if not self.file_to_decompress_path:
-            tkinter.messagebox.showerror("File Error", "Choose the file to decompress")
+            messagebox.showerror("File Error", "Choose the file to decompress")
         else:
             self.file_to_decompress_name.configure(state="normal")
             self.file_to_decompress_name.delete(0, "end")
@@ -279,7 +263,7 @@ class App(customtkinter.CTk):
                 elif self.extension == "huf":
                     self.huffman.decode_file(self.file_to_decompress_path, file.name)
 
-                tkinter.messagebox.showinfo(
+                messagebox.showinfo(
                     "Success", "The file has been successfully decompressed!"
                 )
                 self.file_to_decompress_name.configure(state="normal")

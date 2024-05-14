@@ -1,7 +1,9 @@
 """
 LZ78 class
 """
+
 import io
+
 
 class LZ78:
     """
@@ -54,13 +56,13 @@ class LZ78:
                     if not byte:
                         break
 
-                    number = int.from_bytes(byte[:codding_length-1], "big")
-                    character = byte[codding_length-1:codding_length]
+                    number = int.from_bytes(byte[: codding_length - 1], "big")
+                    character = byte[codding_length - 1 : codding_length]
                     decoded = dictionary[number] + character
                     output += decoded
                     dictionary[len(dictionary)] = decoded
 
-                except IndexError:
+                except (KeyError, IndexError):
                     output += byte
 
         return bytes(output)
