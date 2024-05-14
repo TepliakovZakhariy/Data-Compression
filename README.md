@@ -1,6 +1,6 @@
 # Data-Compression
 
-<img align="right" width="102" height="63" src="./assets/image.ico">A program for compressing files using such algorithms as **LZW**, **Huffman code**, **LZ77** and **LZ78**, **Deflate**.
+<img align="right" width="102" height="63" src="./assets/image.ico">A program for compressing files using such algorithms as [**LZW**](https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch), [**Huffman code**](https://en.wikipedia.org/wiki/Huffman_coding), [**LZ77** and **LZ78**](https://en.wikipedia.org/wiki/LZ77_and_LZ78).
 
 ## Contents
 
@@ -231,7 +231,7 @@ The LZ77 algorithm is very good if there are many repeating sequences. Otherwise
 
 ## Collaborators
 
-- Teplyakov Zakhary - LZW
-- Lev-Fedor Lysyk - LZ77, Huffman
-- Vladislav Sidorak - Interface
-- Oleg Shtogrin - LZ78
+- [Zakharii Teplyakov](https://github.com/TepliakovZakhariy) - LZW
+- [Lev-Fedir Lysyk](https://github.com/Lius912) - LZ77, Huffman
+- [Vladyslav Sydorak](https://github.com/Vladick102) - Interface
+- [Oleg Shtogryn](https://github.com/lalkaman1981) - LZ78
