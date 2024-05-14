@@ -1,10 +1,11 @@
 # Data-Compression
 
-A program for compressing files using such algorithms as **LZW**, **Huffman code**, **LZ77** and **LZ78**, **Deflate**.
+<img align="right" width="102" height="63" src="./assets/image.ico">A program for compressing files using such algorithms as **LZW**, **Huffman code**, **LZ77** and **LZ78**, **Deflate**.
 
 ## Contents
 
 - [Installation](#installation)
+- [Interface](#interface)
 - [Description of algorithms](#description-of-algorithms)
   - [LZW](#lzw)
   - [LZ78](#lz78)
@@ -22,6 +23,16 @@ cd Data-Compression
 pip install -r requirements.txt
 python src/main.py
 ```
+
+## Interface
+
+<img align="right" width="157" height="288" src="./assets/app.png">To develop the GUI, we chose the **CustomTkinter** library. Regular Tkinter is the Python interface to the Tk GUI toolkit and is the de facto standard Python GUI. The advantage of CustomTkinter over Tkinter is its ease of use and new built-in widgets that can be widely customized.
+
+The program has two tabs: **Compress** and **Decompress**.
+
+To compress a file, you need to select one of the encoding algorithms presented. By clicking the "Browse File" button, select the file you want to encode. Then click the "Compress and Save" button, set the name and location for the encoded file and wait for the window that will inform you about the completion of compression.
+
+To return the compressed file to its original form, go to the "Decompress" tab, click the "Browse File" button, select the desired file and click the "Decompress and Save" button, set the name and location for the decompressed file and wait for the window to notify you that decompression is complete.
 
 ## Description of algorithms
 
