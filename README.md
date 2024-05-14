@@ -227,3 +227,10 @@ The **LZ77** algorithm is a lossless data compression algorithm created by Abrah
 #### Conclusion
 
 The LZ77 algorithm is very good if there are many repeating sequences. Otherwise, it needs a very large buffer size.
+
+## Collaborators
+
+- Teplyakov Zakhary - LZW
+- Lev-Fedor Lysyk - LZ77, Huffman
+- Vladislav Sidorak - Interface
+- Oleg Shtogrin - LZ78
