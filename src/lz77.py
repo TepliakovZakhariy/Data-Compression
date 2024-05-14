@@ -1,6 +1,3 @@
-from time import time
-
-
 class LZ77:
     def __init__(self, buffer_size: int) -> None:
         self.buffer_size = buffer_size
@@ -119,19 +116,3 @@ class LZ77:
                 )
             i += code_len + 1
         return decoded_text
-
-
-if __name__ == "__main__":
-    lz = LZ77(100)
-    file_path = r"tree.jpg"
-    encoded_path = r"encoded_tree.lz77"
-    decoded_path = "decoded_tree.jpg"
-    start = time()
-    lz.encode_file(file_path, encoded_path)
-    print("encoding time:", time() - start)
-    start = time()
-    lz.decode_file(encoded_path, decoded_path)
-    print("decoding time:", time() - start)
-    with open(file_path, "rb") as file:
-        with open(decoded_path, "rb") as file2:
-            assert file.read() == file2.read()
