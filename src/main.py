@@ -38,6 +38,13 @@ class App(customtkinter.CTk):
         self.label_tab_compress.pack_propagate(False)
         self.label_tab_compress.pack()
 
+        # second tab
+        self.label_tab_decompress = customtkinter.CTkLabel(
+            self.tabview.tab("Decompress"), text="Choose the file to decompress"
+        )
+        self.label_tab_decompress.pack_propagate(False)
+        self.label_tab_decompress.pack()
+
         # create first frame
         self.compress_frame = customtkinter.CTkFrame(self.tabview.tab("Compress"))
         self.compress_var = tkinter.StringVar(value="")
@@ -83,6 +90,28 @@ class App(customtkinter.CTk):
         )
         self.compress_button_5.pack(pady=10)
 
+        # create second frame
+        self.decompress_frame = customtkinter.CTkFrame(self.tabview.tab("Decompress"))
+        self.decompress_frame.pack()
+
+        # create compress filename line
+        self.file_to_compress_name = customtkinter.CTkEntry(
+            master=self.tabview.tab("Compress"), state="disabled", width=230
+        )
+        self.file_to_compress_name.pack(pady=10)
+
+        # create decompress filename line
+        self.file_to_decompress_name = customtkinter.CTkEntry(
+            master=self.decompress_frame, state="disabled", width=230
+        )
+        self.file_to_decompress_name.pack(pady=10)
+
+        # create compress choose file label
+        self.choose_file_to_compress_label = customtkinter.CTkLabel(
+            master=self.tabview.tab("Compress"), text="Choose the file to compress"
+        )
+        self.choose_file_to_compress_label.pack()
+
         # create compress browse file button
         self.compress_browse_button = customtkinter.CTkButton(
             master=self.tabview.tab("Compress"),
@@ -93,17 +122,6 @@ class App(customtkinter.CTk):
             command=self.BrowseFileToCompress,
         )
         self.compress_browse_button.pack(pady=10)
-
-        # second tab
-        self.label_tab_decompress = customtkinter.CTkLabel(
-            self.tabview.tab("Decompress"), text="Choose the file to decompress"
-        )
-        self.label_tab_decompress.pack_propagate(False)
-        self.label_tab_decompress.pack()
-
-        # create second frame
-        self.decompress_frame = customtkinter.CTkFrame(self.tabview.tab("Decompress"))
-        self.decompress_frame.pack()
 
         # create decompress browse file button
         self.decompress_browse_button = customtkinter.CTkButton(
@@ -116,39 +134,27 @@ class App(customtkinter.CTk):
         )
         self.decompress_browse_button.pack(pady=10)
 
-        # create compress filename line
-        self.file_to_compress_name = customtkinter.CTkEntry(
-            master=self.tabview.tab("Compress"), state="disabled"
-        )
-        self.file_to_compress_name.pack()
-
-        # create decompress filename line
-        self.file_to_decompress_name = customtkinter.CTkEntry(
-            master=self.decompress_frame, state="disabled"
-        )
-        self.file_to_decompress_name.pack()
-
-        # create decompress save file button
-        self.decompress_save_button = customtkinter.CTkButton(
-            master=self.decompress_frame,
-            text="Save File",
-            fg_color="transparent",
-            border_width=2,
-            text_color=("gray10", "#DCE4EE"),
-            command=self.SaveDecompressedFile,
-        )
-        self.decompress_save_button.pack(pady=10)
-
         # create compress save file button
         self.compress_save_button = customtkinter.CTkButton(
             master=self.tabview.tab("Compress"),
-            text="Save File",
+            text="Compress and save",
             fg_color="transparent",
             border_width=2,
             text_color=("gray10", "#DCE4EE"),
             command=self.SaveCompressedFile,
         )
-        self.compress_save_button.pack(pady=10)
+        self.compress_save_button.pack()
+
+        # create decompress save file button
+        self.decompress_save_button = customtkinter.CTkButton(
+            master=self.decompress_frame,
+            text="Decompress and save",
+            fg_color="transparent",
+            border_width=2,
+            text_color=("gray10", "#DCE4EE"),
+            command=self.SaveDecompressedFile,
+        )
+        self.decompress_save_button.pack()
 
     def BrowseFileToCompress(self):
         if not self.compress_var.get():
@@ -194,49 +200,6 @@ class App(customtkinter.CTk):
         else:
             tkinter.messagebox.showerror("File Error", "Unknown type of file")
 
-    def SaveDecompressedFile(self):
-        if not self.file_to_decompress_path:
-            tkinter.messagebox.showerror("File Error", "Choose the file to decompress")
-        else:
-            file = filedialog.asksaveasfile(
-                title="Save File", defaultextension=f".{self.decompressed_filetype}"
-            )
-
-            if self.extension == "lz77":
-                self.lz77.decode_file(self.file_to_decompress_path, file.name)
-
-                tkinter.messagebox.showerror("Success", "Success")
-                self.file_to_decompress_name.configure(state="normal")
-                self.file_to_decompress_name.delete(0, "end")
-                self.file_to_decompress_name.configure(state="disabled")
-
-            elif self.extension == "lz78":
-                Codder.decoding(self.file_to_decompress_path, file.name)
-
-                tkinter.messagebox.showerror("Success", "Success")
-                self.file_to_decompress_name.configure(state="normal")
-                self.file_to_decompress_name.delete(0, "end")
-                self.file_to_decompress_name.configure(state="disabled")
-
-            elif self.extension == "lzw":
-                LZW.decode_file(self.file_to_decompress_path, file.name)
-
-                tkinter.messagebox.showerror("Success", "Success")
-                self.file_to_decompress_name.configure(state="normal")
-                self.file_to_decompress_name.delete(0, "end")
-                self.file_to_decompress_name.configure(state="disabled")
-
-            elif self.extension == "huf":
-                self.huffman.decode_file(self.file_to_decompress_path, file.name)
-
-                tkinter.messagebox.showerror("Success", "Success")
-                self.file_to_decompress_name.configure(state="normal")
-                self.file_to_decompress_name.delete(0, "end")
-                self.file_to_decompress_name.configure(state="disabled")
-
-            else:
-                tkinter.messagebox.showerror("File Error", "Unknown type of encoding")
-
     def SaveCompressedFile(self):
         if not self.compress_var.get():
             tkinter.messagebox.showerror(
@@ -251,45 +214,83 @@ class App(customtkinter.CTk):
                 tkinter.messagebox.showerror(
                     "File Error", "Choose the method of compression"
                 )
+            self.file_to_compress_name.configure(state="normal")
+            self.file_to_compress_name.delete(0, "end")
+            self.file_to_compress_name.insert(0, "Compression in progress...")
+            self.file_to_compress_name.configure(state="disabled")
 
+            file = None
             file = filedialog.asksaveasfile(
                 title="Save File", defaultextension=f".{extension}"
             )
 
-            if extension == "lz77":
-                self.lz77.encode_file(self.file_to_compress_path, file.name)
+            if file and extension in ["lz77", "lz78", "lzw", "huf"]:
 
-                tkinter.messagebox.showerror("Success", "Success")
-                self.file_to_compress_name.configure(state="normal")
-                self.file_to_compress_name.delete(0, "end")
-                self.file_to_compress_name.configure(state="disabled")
+                if extension == "lz77":
+                    self.lz77.encode_file(self.file_to_compress_path, file.name)
 
-            elif extension == "lz78":
-                Codder.encoding(self.file_to_compress_path, file.name)
+                elif extension == "lz78":
+                    Codder.encoding(self.file_to_compress_path, file.name)
 
-                tkinter.messagebox.showerror("Success", "Success")
-                self.file_to_compress_name.configure(state="normal")
-                self.file_to_compress_name.delete(0, "end")
-                self.file_to_compress_name.configure(state="disabled")
+                elif extension == "lzw":
+                    LZW.encode_file(self.file_to_compress_path, file.name)
 
-            elif extension == "lzw":
-                LZW.encode_file(self.file_to_compress_path, file.name)
+                elif extension == "huf":
+                    self.huffman.encode_file(self.file_to_compress_path, file.name)
 
-                tkinter.messagebox.showerror("Success", "Success")
-                self.file_to_compress_name.configure(state="normal")
-                self.file_to_compress_name.delete(0, "end")
-                self.file_to_compress_name.configure(state="disabled")
-
-            elif extension == "huf":
-                self.huffman.encode_file(self.file_to_compress_path, file.name)
-
-                tkinter.messagebox.showerror("Success", "Success")
+                tkinter.messagebox.showinfo(
+                    "Success", "The file has been successfully compressed!"
+                )
                 self.file_to_compress_name.configure(state="normal")
                 self.file_to_compress_name.delete(0, "end")
                 self.file_to_compress_name.configure(state="disabled")
 
             else:
-                tkinter.messagebox.showerror("File Error", "Unknown type of file")
+                self.file_to_compress_name.configure(state="normal")
+                self.file_to_compress_name.delete(0, "end")
+                self.file_to_compress_name.insert(0, self.file_to_compress_path)
+                self.file_to_compress_name.configure(state="disabled")
+
+    def SaveDecompressedFile(self):
+        if not self.file_to_decompress_path:
+            tkinter.messagebox.showerror("File Error", "Choose the file to decompress")
+        else:
+            self.file_to_decompress_name.configure(state="normal")
+            self.file_to_decompress_name.delete(0, "end")
+            self.file_to_decompress_name.insert(0, "Decompression in progress...")
+            self.file_to_decompress_name.configure(state="disabled")
+
+            file = None
+            file = filedialog.asksaveasfile(
+                title="Save File", defaultextension=f".{self.decompressed_filetype}"
+            )
+
+            if file and self.extension in ["lz77", "lz78", "lzw", "huf"]:
+
+                if self.extension == "lz77":
+                    self.lz77.decode_file(self.file_to_decompress_path, file.name)
+
+                elif self.extension == "lz78":
+                    Codder.decoding(self.file_to_decompress_path, file.name)
+
+                elif self.extension == "lzw":
+                    LZW.decode_file(self.file_to_decompress_path, file.name)
+
+                elif self.extension == "huf":
+                    self.huffman.decode_file(self.file_to_decompress_path, file.name)
+
+                tkinter.messagebox.showinfo(
+                    "Success", "The file has been successfully decompressed!"
+                )
+                self.file_to_decompress_name.configure(state="normal")
+                self.file_to_decompress_name.delete(0, "end")
+                self.file_to_decompress_name.configure(state="disabled")
+
+            else:
+                self.file_to_decompress_name.configure(state="normal")
+                self.file_to_decompress_name.delete(0, "end")
+                self.file_to_decompress_name.insert(0, self.file_to_decompress_path)
+                self.file_to_decompress_name.configure(state="disabled")
 
 
 if __name__ == "__main__":
