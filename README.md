@@ -52,3 +52,21 @@ A notable feature of the LZW algorithm is its simplicity of implementation. The 
 - **get_extension()**
 
   This function accepts an encoded file and returns its original extension, which is required for the program itself.
+
+### LZ78
+
+**LZ78** is one of the data compression algorithms invented by Abraham Lempel and Jakob Ziv, which is where the abbreviation actually comes from. The algorithm is based on the principle of passing two elements to the output: an index and an element. Our output itself looks like a conditional list with a very large number of tuples containing the two elements already mentioned. Elements are passed according to the principle: if an element or a sequence of elements has not been encountered before, we write it to our list, and give the index of the largest sequence that has already been encountered and the last element in the output.
+
+- **encode()**
+
+  First, according to the already defined algorithm, we binary read the file and pass all this information to the main function. Inside the algorithm, we are already working with bytes. For each index, we allocate from one byte (at first we encode the file with 1 byte, if not, then two, and so on) , when we encode a character with one byte. Thus, we encode one sequence from 2 bytes onwards. Usually, three bytes is the most optimal weight for encoding an index, because 4 is too much and 2 is too little (1 byte can encode numbers from 0 to 255, i.e. 2^8, 2 bytes up to 2^16, etc.)
+
+  Then we write it all binary to a file, which we provide to the user via the path he or she has defined (the path itself is specified in our Tkinter). Additionally, we write down how many bytes one index was encoded with (this will be our first written byte). We also need to define the format of our file. To do this, we first split the name of our path with one dot (i.e. maxsplit = 1), then write it to the file byte by byte. The first byte is the length of the extension, and the next three bytes are the extension itself.
+
+- **decode()**
+
+  To decode a binary file, we open the file and read the number of bytes that were written + 1: the allocated number of bytes is the index, and 1 byte is the character. We decompose all these elements into readable ones and process them. After all these machinations, we simply write all our formations to the file in binary. We encode them in binary because this is the only way to work with all possible data (from text files to videos and mp3 files).
+
+- **get_extension()**
+
+  The function **get_extension** reads the file format we have encoded to correctly decode the file in the desired format.
